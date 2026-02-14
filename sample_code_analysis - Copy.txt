@@ -1,0 +1,46 @@
+CODE FEEDBACK SYSTEM - Analysis Results
+============================================================
+
+--- FORMATTED CODE ---
+def calculate_sum(a, b, c):
+    x = a + b
+    y = x + c
+    return y
+
+class Calculator:
+
+    def __init__(self, name):
+        self.name = name
+        self.result = 0
+
+    def add(self, x, y):
+        self.result = x + y
+        return self.result
+
+    def multiply(self, x, y):
+        self.result = x * y
+        return self.result
+import math
+from datetime import datetime
+
+def fibonacci(n):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+if __name__ == '__main__':
+    calc = Calculator('MyCalc')
+    result = calc.add(5, 10)
+    print(result)
+
+--- CODE STRUCTURE ---
+Functions: [{'name': 'calculate_sum', 'lineno': 3, 'args': ['a', 'b', 'c']}, {'name': 'fibonacci', 'lineno': 24, 'args': ['n']}, {'name': '__init__', 'lineno': 9, 'args': ['self', 'name']}, {'name': 'add', 'lineno': 13, 'args': ['self', 'x', 'y']}, {'name': 'multiply', 'lineno': 17, 'args': ['self', 'x', 'y']}]
+Classes: [{'name': 'Calculator', 'lineno': 8, 'methods': ['__init__', 'add', 'multiply']}]
+Imports: 2
+Assignments: 8
+
+--- AST STATISTICS ---
+Total nodes: 158
+Unique types: 25
