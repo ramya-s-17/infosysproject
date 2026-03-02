@@ -1,0 +1,53 @@
+CODE FEEDBACK SYSTEM - Analysis Results
+============================================================
+
+--- FORMATTED CODE ---
+import math
+from datetime import datetime
+
+def calculate_factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * calculate_factorial(n - 1)
+
+class DataProcessor:
+
+    def __init__(self, name):
+        self.name = name
+        self.data = []
+
+    def add_data(self, value):
+        self.data.append(value)
+        return len(self.data)
+
+    def get_average(self):
+        if len(self.data) == 0:
+            return 0
+        return sum(self.data) / len(self.data)
+
+    def process_data(self):
+        processed = [x * 2 for x in self.data]
+        return processed
+
+def main():
+    processor = DataProcessor('My Processor')
+    processor.add_data(10)
+    processor.add_data(20)
+    processor.add_data(30)
+    avg = processor.get_average()
+    result = processor.process_data()
+    print(f'Average: {avg}')
+    print(f'Result: {result}')
+if __name__ == '__main__':
+    main()
+
+--- CODE STRUCTURE ---
+Functions: [{'name': 'calculate_factorial', 'lineno': 4, 'args': ['n']}, {'name': 'main', 'lineno': 28, 'args': []}, {'name': '__init__', 'lineno': 11, 'args': ['self', 'name']}, {'name': 'add_data', 'lineno': 15, 'args': ['self', 'value']}, {'name': 'get_average', 'lineno': 19, 'args': ['self']}, {'name': 'process_data', 'lineno': 24, 'args': ['self']}]
+Classes: [{'name': 'DataProcessor', 'lineno': 10, 'methods': ['__init__', 'add_data', 'get_average', 'process_data']}]
+Imports: 2
+Assignments: 6
+
+--- AST STATISTICS ---
+Total nodes: 199
+Unique types: 29
