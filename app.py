@@ -13,6 +13,8 @@ sys.path.insert(0, str(Path(__file__).parent / 'code-parser-project'))
 from parser import CodeParser, analyze_code
 from error_detector import ErrorDetector
 from ai_suggestor import AISuggestor
+from story_generator import StoryGenerator
+from code_reviewer import CodeReviewer
 
 app = Flask(__name__)
 
@@ -23,6 +25,18 @@ try:
 except ValueError as e:
     print(f"Warning: AI Suggestor not initialized - {e}")
     ai_suggestor = None
+
+try:
+    story_gen = StoryGenerator()
+except ValueError as e:
+    print(f"Warning: Story Generator not initialized - {e}")
+    story_gen = None
+
+try:
+    code_reviewer = CodeReviewer()
+except ValueError as e:
+    print(f"Warning: Code Reviewer not initialized - {e}")
+    code_reviewer = None
 
 @app.route('/')
 def index():
@@ -78,7 +92,76 @@ def analyze():
             'error': f'Error: {str(e)}'
         }), 500
 
-@app.route('/api/detect-errors', methods=['POST'])
+@app.route('/reviewer')
+def reviewer():
+    return render_template('reviewer.html')
+
+@app.route('/api/review', methods=['POST'])
+def review_code():
+    try:
+        if not code_reviewer:
+            return jsonify({'success': False, 'error': 'Code Reviewer not available.'}), 503
+        data = request.get_json()
+        code = data.get('code', '').strip()
+        language = data.get('language', 'python')
+        focus = data.get('focus', 'all')
+        if not code:
+            return jsonify({'success': False, 'error': 'No code provided'}), 400
+        result = code_reviewer.review(code, language, focus)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/review-chat', methods=['POST'])
+def review_chat():
+    try:
+        if not code_reviewer:
+            return jsonify({'success': False, 'error': 'Code Reviewer not available.'}), 503
+        data = request.get_json()
+        code = data.get('code', '')
+        question = data.get('question', '')
+        history = data.get('history', [])
+        if not question:
+            return jsonify({'success': False, 'error': 'No question provided'}), 400
+        result = code_reviewer.chat(code, question, history)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/story')
+def story():
+    return render_template('story.html')
+
+@app.route('/api/generate-story', methods=['POST'])
+def generate_story():
+    try:
+        if not story_gen:
+            return jsonify({'success': False, 'error': 'Story Generator not available.'}), 503
+        data = request.get_json()
+        prompt = data.get('prompt', '').strip()
+        style = data.get('style', 'epic')
+        length = int(data.get('length', 5))
+        if not prompt:
+            return jsonify({'success': False, 'error': 'No prompt provided'}), 400
+        result = story_gen.generate_story(prompt, style, length)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/continue-story', methods=['POST'])
+def continue_story():
+    try:
+        if not story_gen:
+            return jsonify({'success': False, 'error': 'Story Generator not available.'}), 503
+        data = request.get_json()
+        story = data.get('story', {})
+        direction = data.get('direction', 'continue the adventure')
+        result = story_gen.continue_story(story, direction)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 def detect_errors():
     """API endpoint for error detection only."""
     try:
@@ -127,11 +210,11 @@ def ai_suggest():
         }), 500
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 5000))
     print("\n" + "="*60)
     print("CODE PARSING WEB APPLICATION")
     print("="*60)
-    print("\nStarting web server...")
-    print("Open your browser and go to: http://localhost:5000")
+    print(f"\nStarting web server on port {port}...")
     print("\n" + "="*60 + "\n")
-    
-    app.run(debug=True, port=5000, host='localhost')
+    app.run(debug=False, port=port, host='0.0.0.0')
